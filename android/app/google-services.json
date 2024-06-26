@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "892239360200",
+    "project_id": "simple-b6475",
+    "storage_bucket": "simple-b6475.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892239360200:android:e6b765d21634c25c4ef5fd",
+        "android_client_info": {
+          "package_name": "com.nerulending.neru_lending"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFi8qpJgkXzVEB_w8CQ_FqLq2Kv-a1tbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
