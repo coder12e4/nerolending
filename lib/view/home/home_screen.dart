@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:neru_lending/view/home/widgets/category_container.dart';
 import '../../../core/colors/colors.dart';
 import '../../../core/common_widgets/baground_design.dart';
 import '../../../core/common_widgets/drop_down_widget.dart';
@@ -67,54 +68,110 @@ class HomeScreen extends StatelessWidget {
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: GetBuilder<HomeController>(builder: (value) {
-                return Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 36,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(child: SearchTextField(controller: value)),
-                          ],
-                        ),
-                      ),
-                      kSizedBoxH,
-                      Text(
-                        'Industry'.tr,
-                        style: const TextStyle(
-                          color: smallTextColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      kSizedBoxH,
-                      Flexible(
-                        child: GridView.builder(
-                            scrollDirection: Axis.vertical,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 4.0,
-                                    mainAxisSpacing: 4.0
+                return StreamBuilder(
+                    stream: value.todoStream("food"),
+                    builder: (c, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData) {
+                        return Text('No data');
+                      } else {
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 36,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                        child:
+                                            SearchTextField(controller: value)),
+                                  ],
+                                ),
+                              ),
+                              kSizedBoxH,
+                              Text(
+                                'Industry'.tr,
+                                style: const TextStyle(
+                                  color: smallTextColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              kSizedBoxH,
+                              Flexible(
+                                child: GridView.builder(
+                                    scrollDirection: Axis.vertical,
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3,
+                                            crossAxisSpacing: 4.0,
+                                            mainAxisSpacing: 4.0
 
-                                    // Number of columns
-                                    ),
-                            itemBuilder: (context, index) {
-                              return CategoryHomeTile(
-                                index: index,
-                                controller: value,
-                                secondIndex: index,
-                              );
-                            },
-                            itemCount: value.listgroup.length),
-                      ),
-                      kSizedBoxH,
-                    ],
-                  ),
-                );
+                                            // Number of columns
+                                            ),
+                                    itemBuilder: (context, index) {
+                                      return GlassMorphism(
+                                        boarderColor:
+                                            controller.listgroup == index
+                                                ? buttonBgColor
+                                                : lightBlackColor,
+                                        start: 0.1,
+                                        end: 0.1,
+                                        child: SizedBox(
+                                          height: 90.h,
+                                          width: 83.w,
+                                          child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                CircleAvatar(
+                                                  backgroundColor:
+                                                      lightBlackColor,
+                                                  radius: 23.r,
+                                                  backgroundImage: NetworkImage(
+                                                    snapshot.data![index]
+                                                        .section_img,
+                                                  ),
+                                                ),
+                                                kSizedBoxH,
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8.0),
+                                                  child: Text(
+                                                    snapshot.data![index].name,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        color: whiteColor),
+                                                  ),
+                                                ),
+                                              ]),
+                                        ),
+                                      );
+                                      return Container(
+                                        child: Column(
+                                          children: [
+                                            Text(snapshot.data![index].name)
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                    itemCount: snapshot.data!.length),
+                              ),
+                              kSizedBoxH,
+                            ],
+                          ),
+                        );
+                      }
+                    });
               }),
             ),
           ),

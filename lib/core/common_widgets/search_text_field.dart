@@ -54,13 +54,7 @@ class SearchTextField extends StatelessWidget {
             color: whiteColor,
           )),
       onChanged: (value) {
-        controller.debouncer.call(() {
-          if (value.isNotEmpty) {
-            controller.getAgentList();
-          } else {
-            controller.getAgentList();
-          }
-        });
+        controller.update();
       },
       textAlign: TextAlign.start,
     );

@@ -18,20 +18,51 @@ import '../connectivity/connectivity_checker.dart';
 class HomeController extends GetxController implements GetxService {
   final HomeParser parser;
   HomeController({required this.parser});
+
+  RxList<Groups> todoList = <Groups>[].obs;
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+
+    super.onInit();
+  }
+
+/*
   @override
   void onReady() {
     log("internet connection $isInternetOn");
 
-    readHomeData();
+    //readHomeData();
 
-    /*  getLocation();
+    */
+/*  getLocation();
     getCatogery();
     getAgentList();
     updateSelectedCategoryIndex(0);
-    categorySelection(-1);*/
+    categorySelection(-1);*/ /*
+
     confirmationResult.value = false;
 
     super.onReady();
+  }
+*/
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Stream<List<Groups>> todoStream(String? serach) {
+    return firestore
+        .collection("homedata")
+        .where(serach!)
+        .snapshots()
+        .map((QuerySnapshot query) {
+      List<Groups> retVal = [];
+      retVal.clear();
+      query.docs.forEach((element) {
+        retVal.add(Groups.fromDocumentSnapshot(element));
+      });
+      return retVal;
+    });
   }
 
   final ConnectivityService _connectivityService =
@@ -68,6 +99,7 @@ class HomeController extends GetxController implements GetxService {
       <DropdownMenuItem<CatogoryData>>[];
   List<DropdownMenuItem<CatogoryData>> get dropdownMenuItemsCategory =>
       _dropdownMenuItemsCategory;
+
   LocationData? selecteValue;
   String? selectedWageMode;
   String? selectedRating;
@@ -337,19 +369,11 @@ class HomeController extends GetxController implements GetxService {
 
   //read home data
   List<Groups> k = [];
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Groups> listgroup = [];
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Stream<List<Groups>> streamGroups() {
-    return _db.collection('homedata').snapshots().map((QuerySnapshot snapshot) {
-      return snapshot.docs.map((doc) {
-        return Groups.fromJson(doc.data() as Map<String, dynamic>);
-      }).toList();
-    });
-  }
-
+/*
   readHomeData() async {
     try {
       await firestore
@@ -359,8 +383,8 @@ class HomeController extends GetxController implements GetxService {
         querySnapshot.docs.forEach((doc) {
           listgroup.add(new Groups(
               name: doc["name"],
-              sectionImg: doc["section_img"],
-              discription: doc["discription"]));
+              section_img: doc["section_img"],
+              description: doc["discription"]));
         });
         update();
       });
@@ -368,26 +392,58 @@ class HomeController extends GetxController implements GetxService {
       print(e);
     }
   }
+*/
 }
 
 class Groups {
-  String? name;
-  String? discription;
-  String? sectionImg;
+  final String id;
+  final String name;
+  final String description;
+  final String section_img;
+  Groups({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.section_img,
+  });
 
-  Groups({this.name, this.discription, this.sectionImg});
-
-  Groups.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    discription = json['discription'];
-    sectionImg = json['section_img'];
+  // Factory constructor to create an ItemModel from a DocumentSnapshot
+  factory Groups.fromDocumentSnapshot(DocumentSnapshot doc) {
+    return Groups(
+        id: doc.id,
+        name: doc['name'],
+        description: doc['discription'],
+        section_img: doc['section_img']);
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['discription'] = this.discription;
-    data['section_img'] = this.sectionImg;
-    return data;
+  // Method to convert an ItemModel to a map
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'description': description,
+      'section_img': section_img
+    };
+  }
+}
+
+class Database {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Stream<List<Groups>> todoStream() {
+    try {
+      return firestore
+          .collection("homedata")
+          .snapshots()
+          .map((QuerySnapshot query) {
+        List<Groups> retVal = [];
+        query.docs.forEach((element) {
+          retVal.add(Groups.fromDocumentSnapshot(element));
+        });
+        return retVal;
+      });
+    } catch (e) {
+      print(e);
+      return null!;
+    }
   }
 }

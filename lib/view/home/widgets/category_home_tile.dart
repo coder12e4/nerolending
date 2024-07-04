@@ -33,9 +33,7 @@ class CategoryHomeTile extends StatelessWidget {
       },
       child: GlassMorphism(
         boarderColor:
-            controller.listgroup == index && controller.listgroup != secondIndex
-                ? buttonBgColor
-                : lightBlackColor,
+            controller.listgroup == index ? buttonBgColor : lightBlackColor,
         start: 0.1,
         end: 0.1,
         child: SizedBox(
@@ -46,19 +44,19 @@ class CategoryHomeTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircleAvatar(
-                  backgroundColor: controller.listgroup == index
+                  backgroundColor: controller.todoList == index
                       ? buttonBgColor
                       : lightBlackColor,
                   radius: 23.r,
                   backgroundImage: NetworkImage(
-                    controller.listgroup[index].sectionImg!,
+                    controller.todoList[index].section_img,
                   ),
                 ),
                 kSizedBoxH,
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    controller.listgroup[index].name!,
+                    controller.todoList[index].name,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: whiteColor),
                   ),
